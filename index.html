@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiMirrorShop | Exposición de Producto Innovador 3D</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js (Librería 3D) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- QRCode.js (Generador de Código QR) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            mint: '#E2F0D9',
+                            mintDark: '#C5E0B4',
+                            rose: '#FCE7F0',
+                            roseDark: '#F4B8E4',
+                            cream: '#FFF9E6',
+                            lavender: '#E9E4F0',
+                            lavenderDark: '#D5CBE2',
+                            accent: '#FF85A1',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Fredoka', 'sans-serif'],
+                        body: ['Quicksand', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-body min-h-full flex flex-col text-slate-700 bg-slate-50">
+
+    <!-- BARRA SUPERIOR DE EXPOSICIÓN -->
+    <div class="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white text-xs font-bold py-2 px-4 text-center tracking-wide flex items-center justify-center gap-2 shadow-sm">
+        <span>✨ PROYECTO EXPOSICIÓN: DEMO EN VIVO INTERACTIVO DE PRODUCTO 3D ✨</span>
+    </div>
+
+    <!-- ENCABEZADO Y NAVEGACIÓN -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-pastel-rose shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- LOGO CON LOGOTIPO 3D INTERACTIVO -->
+                <div class="flex items-center gap-3">
+                    <div id="logo3dContainer" class="w-12 h-12 bg-pastel-rose rounded-2xl flex items-center justify-center overflow-hidden border-2 border-white shadow-md cursor-pointer">
+                        <canvas id="logo3dCanvas" class="w-full h-full"></canvas>
+                    </div>
+                    <div>
+                        <a href="#" class="font-heading font-bold text-2xl text-slate-700 tracking-wide flex items-center gap-1">
+                            Lumi<span class="text-pink-400">Mirror</span><span class="text-purple-400">Shop</span> ✨
+                        </a>
+                        <p class="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Tecnología de Iluminación Personal</p>
+                    </div>
+                </div>
+
+                <!-- BUSCADOR -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Buscar en la presentación..." 
+                            class="w-full bg-slate-100/80 text-sm rounded-full pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-pastel-accent/50 transition">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-sm"></i>
+                    </div>
+                </div>
+
+                <!-- ACCIONES DE CABECERA -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- BOTÓN CÓDIGO QR PARA EL PÚBLICO -->
+                    <button onclick="openQrModal()" class="flex items-center gap-2 bg-pastel-cream hover:bg-amber-100 text-slate-700 font-bold px-4 py-2 rounded-full text-xs shadow-sm border border-amber-200 transition">
+                        <i class="fa-solid fa-qrcode text-amber-500 text-base"></i>
+                        <span>Escanear QR</span>
+                    </button>
+
+                    <!-- BOTÓN CARRITO -->
+                    <button onclick="toggleCart()" class="relative bg-pastel-rose hover:bg-pastel-roseDark/50 text-slate-700 p-2.5 rounded-full transition shadow-sm border border-pink-200 flex items-center justify-center">
+                        <i class="fa-solid fa-bag-shopping text-pink-500 text-lg"></i>
+                        <span id="cartCount" class="absolute -top-1 -right-1 bg-pastel-accent text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- BUSCADOR MÓVIL -->
+            <div class="md:hidden pb-3">
+                <div class="relative w-full">
+                    <input type="text" id="searchInputMobile" onkeyup="handleSearchMobile()" placeholder="Buscar el Iluminador..." 
+                        class="w-full bg-slate-100 text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-pastel-accent/50">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10" id="mainContent">
+
+        <!-- HERO DESTACADO DE EXPOSICIÓN -->
+        <section class="relative bg-gradient-to-r from-pastel-rose/80 via-pastel-cream to-pastel-mint/80 rounded-3xl p-6 md:p-10 shadow-lg border border-pink-100 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="space-y-4 max-w-xl text-center md:text-left z-10">
+                <span class="inline-block bg-white text-pink-500 font-bold text-xs px-4 py-1.5 rounded-full shadow-sm uppercase tracking-wider border border-pink-100">
+                    💖 Innovación & Diseño Chic
+                </span>
+                <h1 class="font-heading font-bold text-3xl md:text-5xl text-slate-700 leading-tight">
+                    LumiMirror Star <br><span class="text-pink-500">con Espejo LED 3D</span>
+                </h1>
+                <p class="text-sm md:text-base text-gray-600 leading-relaxed">
+                    Un concepto revolucionario de polvera iluminadora personal: integra una corona circular de bombillas LED con temperatura regulable directamente en el espejo reflectante.
+                </p>
+                
+                <div class="flex flex-wrap gap-3 justify-center md:justify-start pt-2">
+                    <button onclick="addToCart(1)" class="bg-pastel-accent hover:bg-red-400 text-white font-bold py-3.5 px-8 rounded-full shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-bag-shopping"></i> Probar / Solicitar Demo
+                    </button>
+                    <button onclick="openQrModal()" class="bg-white hover:bg-slate-50 text-slate-700 font-bold py-3.5 px-6 rounded-full shadow border border-gray-200 transition text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-mobile-screen-button text-pink-500"></i> Ver en Celular
+                    </button>
+                </div>
+            </div>
+
+            <!-- VISOR 3D REALISTA DEL PRODUCTO -->
+            <div class="w-full md:w-1/2 flex flex-col items-center">
+                <div class="relative w-full h-80 md:h-96 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-3xl shadow-2xl overflow-hidden border-4 border-white flex items-center justify-center">
+                    <canvas id="product3dCanvas" class="w-full h-full cursor-grab active:cursor-grabbing touch-none"></canvas>
+                    
+                    <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-[11px] font-bold tracking-wider flex items-center gap-2 border border-white/20">
+                        <i class="fa-solid fa-hand-pointer animate-bounce text-pink-300"></i> Rotación libre 360°
+                    </div>
+
+                    <!-- ESTADO LED -->
+                    <div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-2xl text-white text-xs font-bold flex items-center gap-2 border border-white/20">
+                        <span class="flex h-2 w-2 relative">
+                          <span id="ledPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span id="ledDot" class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span id="ledStatusText">LED Activo</span>
+                    </div>
+                </div>
+
+                <!-- CONTROLES LED INTERACTIVOS EN TIEMPO REAL -->
+                <div class="mt-4 bg-white rounded-2xl p-3.5 shadow-md border border-pink-100 flex flex-wrap items-center justify-center gap-3 w-full max-w-md">
+                    <span class="text-xs font-bold text-slate-600">Luces LED:</span>
+                    <button onclick="toggleLedPower()" id="ledToggleBtn" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-500 text-white hover:bg-rose-600 transition shadow-sm">
+                        Encendido
+                    </button>
+                    <div class="h-4 w-px bg-gray-200"></div>
+                    <span class="text-xs font-bold text-slate-600">Tono:</span>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="setLedMode('warm')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-100 hover:bg-amber-200 text-amber-800 transition">☀️ Cálida</button>
+                        <button onclick="setLedMode('natural')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-pink-100 hover:bg-pink-200 text-pink-800 transition">✨ Natural</button>
+                        <button onclick="setLedMode('cool')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-cyan-100 hover:bg-cyan-200 text-cyan-800 transition">❄️ Fría</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE FICHA Y RESEÑA -->
+        <section class="space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-pastel-rose pb-4">
+                <div>
+                    <h2 class="font-heading font-bold text-2xl text-slate-700">Ficha del Producto 🌟</h2>
+                    <p class="text-xs text-gray-500">Detalles técnicos e innovación del iluminador LumiMirror Star.</p>
+                </div>
+            </div>
+
+            <div id="productGrid" class="space-y-6"></div>
+
+            <div id="emptyState" class="hidden text-center py-16 bg-white rounded-3xl border border-dashed border-gray-200">
+                <i class="fa-solid fa-sparkles text-4xl text-gray-300 mb-3"></i>
+                <h3 class="font-heading font-bold text-lg text-slate-600">Sin coincidencias</h3>
+                <p class="text-xs text-gray-400 mt-1">Intenta buscar "LumiMirror".</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CARRITO DE PEDIDOS -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 hidden transition-opacity opacity-0" onclick="toggleCart()"></div>
+    
+    <aside id="cartDrawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-5 border-b border-gray-100 flex items-center justify-between bg-pastel-rose/40">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-pink-500 text-xl"></i>
+                <h3 class="font-heading font-bold text-lg text-slate-700">Resumen de Exposición</h3>
+            </div>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <div id="cartItems" class="flex-grow p-5 space-y-4 overflow-y-auto"></div>
+
+        <div class="p-5 border-t border-gray-100 bg-pastel-cream space-y-3">
+            <div class="flex justify-between items-center font-heading font-bold text-slate-700 text-lg">
+                <span>Unidades Seleccionadas:</span>
+                <span id="cartTotalItems" class="text-pink-500">0</span>
+            </div>
+            <button onclick="openCheckoutModal()" class="w-full bg-pastel-accent hover:bg-red-400 text-white font-bold py-3 rounded-full shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> Simular Pedido / Solicitud
+            </button>
+        </div>
+    </aside>
+
+    <!-- MODAL CÓDIGO QR PARA EL PÚBLICO -->
+    <div id="qrModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl relative border-2 border-pink-100">
+            <button onclick="closeQrModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-3 text-pink-500 text-xl">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            
+            <h3 class="font-heading font-bold text-xl text-slate-700">¡Pruébalo en tu dispositivo!</h3>
+            <p class="text-xs text-gray-500 mt-1 mb-4">Escanea este código QR con la cámara de tu celular para abrir y probar la aplicación en tiempo real durante la exposición.</p>
+
+            <div class="bg-slate-50 p-6 rounded-2xl border border-gray-100 inline-block mb-4 shadow-inner">
+                <div id="qrcodeCanvas" class="flex justify-center"></div>
+            </div>
+
+            <button onclick="closeQrModal()" class="w-full bg-pastel-rose text-slate-700 font-bold py-2.5 rounded-full hover:bg-pastel-roseDark/60 transition text-sm">
+                Cerrar Ventana
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL DE CHECKOUT -->
+    <div id="checkoutModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border-2 border-pink-100">
+            <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="font-heading font-bold text-2xl text-slate-700 mb-2">Simular Registro ✨</h3>
+            <p class="text-xs text-gray-500 mb-4">Prueba de solicitud para compradores interesadas/os.</p>
+
+            <form onsubmit="submitOrder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nombre del Asistente</label>
+                    <input type="text" required placeholder="Ej: María Valentina" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-pastel-accent">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Correo o WhatsApp de contacto</label>
+                    <input type="text" required placeholder="contacto@ejemplo.com" class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-pastel-accent">
+                </div>
+
+                <button type="submit" class="w-full bg-pastel-accent hover:bg-red-400 text-white font-bold py-3 rounded-full shadow-lg hover:shadow-xl transition text-sm">
+                    Enviar Solicitud
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="bg-white border-t border-pastel-rose mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-heading font-bold text-lg text-slate-700">Lumi<span class="text-pink-400">Mirror</span><span class="text-purple-400">Shop</span></p>
+            <p class="text-xs text-gray-400">Proyecto de presentación | Tienda Chic e Iluminador LED 3D</p>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT COMPLETA -->
+    <script>
+        const products = [
+            {
+                id: 1,
+                name: "Iluminador Espejo LED LumiMirror Star 3D",
+                category: "iluminadores",
+                rating: 5.0,
+                reviews: 142,
+                image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=800&q=80",
+                description: "Iluminador compacto premium dotado de una corona circular de bombillas LED emisivas con tonos regulables alrededor del espejo reflector de alta definición.",
+                reviewText: "¡Este no es un iluminador común y corriente! Es una genialidad total: su espejo trae luces LED regulables integradas para ver exactamente cómo se funde el brillo en tu piel en cualquier condición de luz.",
+                ledFeatures: ["3 Tonos (Cálida / Natural / Fría)", "Batería recargable USB", "Espejo HD anti-distorsión", "Textura ultra sedosa"]
+            }
+        ];
+
+        let cart = [];
+        let ledOn = true;
+        let ledColor = 0xFFD1DC;
+        let mirrorLight;
+        let ledBulbMaterials = [];
+
+        function renderProducts(itemsToRender = products) {
+            const container = document.getElementById('productGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (itemsToRender.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            } else {
+                if (emptyState) emptyState.classList.add('hidden');
+            }
+
+            itemsToRender.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-3xl p-6 shadow-md border border-pink-100 flex flex-col md:flex-row gap-6 items-center hover:shadow-lg transition";
+
+                card.innerHTML = `
+                    <div class="w-full md:w-1/3">
+                        <img src="${prod.image}" alt="${prod.name}" class="rounded-2xl w-full h-56 object-cover shadow border border-pink-50">
+                    </div>
+                    <div class="w-full md:w-2/3 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-pink-100 text-pink-600 font-bold text-xs px-3 py-1 rounded-full uppercase">Producto Estrella</span>
+                            <div class="text-amber-400 text-xs font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-star"></i> ${prod.rating} (${prod.reviews} reseñas)
+                            </div>
+                        </div>
+                        <h3 class="font-heading font-bold text-xl text-slate-700">${prod.name}</h3>
+                        <p class="text-xs text-gray-500 italic bg-pastel-rose/30 p-3 rounded-xl border border-pink-100">
+                            "${prod.reviewText}"
+                        </p>
+                        <p class="text-xs text-gray-600 leading-relaxed">${prod.description}</p>
+                        
+                        <div class="flex flex-wrap gap-2 pt-1">
+                            ${prod.ledFeatures.map(f => `<span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-md font-medium"><i class="fa-solid fa-check text-pink-400 mr-1"></i>${f}</span>`).join('')}
+                        </div>
+
+                        <div class="pt-3 flex items-center gap-3">
+                            <button onclick="addToCart(${prod.id})" class="bg-pastel-accent hover:bg-red-400 text-white font-bold py-2.5 px-6 rounded-full shadow transition text-xs flex items-center gap-2">
+                                <i class="fa-solid fa-bag-shopping"></i> Probar Demo
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        function handleSearchMobile() {
+            const query = document.getElementById('searchInputMobile').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.description.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        function toggleCart() {
+            const drawer = document.getElementById('cartDrawer');
+            const overlay = document.getElementById('cartOverlay');
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function addToCart(productId) {
+            const prod = products.find(p => p.id === productId);
+            if (!prod) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...prod, quantity: 1 });
+            }
+            updateCartUI();
+            toggleCart();
+        }
+
+        function updateQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (!item) return;
+
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartTotalItems = document.getElementById('cartTotalItems');
+
+            if (!container) return;
+
+            const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+            if (cartCount) cartCount.textContent = totalItems;
+            if (cartTotalItems) cartTotalItems.textContent = totalItems;
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fa-solid fa-bag-shopping text-3xl text-gray-300 mb-2"></i>
+                        <p class="text-sm text-gray-400 font-medium">Ningún elemento seleccionado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = cart.map(item => `
+                <div class="bg-slate-50 p-3 rounded-2xl border border-gray-100 flex items-center justify-between gap-3">
+                    <img src="${item.image}" class="w-12 h-12 rounded-xl object-cover">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-xs text-slate-700 line-clamp-1">${item.name}</h4>
+                        <span class="text-xs text-gray-400">Cant: ${item.quantity}</span>
+                    </div>
+                    <div class="flex items-center gap-1 bg-white rounded-full p-1 border border-gray-200">
+                        <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 rounded-full bg-gray-100 hover:bg-pink-100 text-gray-600 font-bold text-xs flex items-center justify-center font-bold">-</button>
+                        <span class="text-xs font-bold px-1">${item.quantity}</span>
+                        <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 rounded-full bg-gray-100 hover:bg-pink-100 text-gray-600 font-bold text-xs flex items-center justify-center font-bold">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                alert("Agrega el producto al resumen para probar la simulación.");
+                return;
+            }
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        function submitOrder(e) {
+            e.preventDefault();
+            alert("¡Demostración enviada con éxito! Muchas gracias por probar LumiMirrorShop.");
+            cart = [];
+            updateCartUI();
+            closeCheckoutModal();
+            toggleCart();
+        }
+
+        function openQrModal() {
+            const modal = document.getElementById('qrModal');
+            const container = document.getElementById('qrcodeCanvas');
+            if (container) {
+                container.innerHTML = '';
+                new QRCode(container, {
+                    text: window.location.href || "https://lumimirror.shop",
+                    width: 160,
+                    height: 160,
+                    colorDark: "#4A4A6A",
+                    colorLight: "#ffffff"
+                });
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeQrModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+        }
+
+        function updateLedUIStatus() {
+            const statusText = document.getElementById('ledStatusText');
+            const ping = document.getElementById('ledPing');
+            const dot = document.getElementById('ledDot');
+            if (!statusText) return;
+
+            if (ledOn) {
+                statusText.textContent = "LED Activo";
+                ping.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
+                dot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-500";
+            } else {
+                statusText.textContent = "LED Apagado";
+                ping.className = "hidden";
+                dot.className = "relative inline-flex rounded-full h-2 w-2 bg-gray-400";
+            }
+        }
+
+        function toggleLedPower() {
+            ledOn = !ledOn;
+            const btn = document.getElementById('ledToggleBtn');
+            if (mirrorLight) {
+                mirrorLight.intensity = ledOn ? 3.5 : 0;
+            }
+            ledBulbMaterials.forEach(mat => {
+                mat.color.setHex(ledOn ? ledColor : 0x444444);
+            });
+            if (btn) {
+                btn.textContent = ledOn ? 'Encendido' : 'Apagado';
+                btn.className = ledOn 
+                    ? 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-500 text-white hover:bg-rose-600 transition shadow-sm'
+                    : 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-gray-400 text-white hover:bg-gray-500 transition shadow-sm';
+            }
+            updateLedUIStatus();
+        }
+
+        function setLedMode(mode) {
+            ledOn = true;
+            const btn = document.getElementById('ledToggleBtn');
+            if (btn) {
+                btn.textContent = 'Encendido';
+                btn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-500 text-white hover:bg-rose-600 transition shadow-sm';
+            }
+
+            if (mode === 'warm') {
+                ledColor = 0xFFB366;
+            } else if (mode === 'natural') {
+                ledColor = 0xFFD1DC;
+            } else if (mode === 'cool') {
+                ledColor = 0x99FFFF;
+            }
+
+            if (mirrorLight) {
+                mirrorLight.color.setHex(ledColor);
+                mirrorLight.intensity = 3.5;
+            }
+            ledBulbMaterials.forEach(mat => {
+                mat.color.setHex(ledColor);
+            });
+            updateLedUIStatus();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            initLogo3D();
+            initProduct3D();
+        });
+
+        function initLogo3D() {
+            const container = document.getElementById('logo3dContainer');
+            const canvas = document.getElementById('logo3dCanvas');
+            if (!container || !canvas) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+            camera.position.z = 3;
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(48, 48);
+
+            const geometry = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 32);
+            const material = new THREE.MeshPhongMaterial({ color: 0xF4B8E4, shininess: 100 });
+            const cylinder = new THREE.Mesh(geometry, material);
+            scene.add(cylinder);
+
+            const light = new THREE.DirectionalLight(0xffffff, 1.2);
+            light.position.set(2, 2, 5);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+
+            cylinder.rotation.x = 0.5;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                cylinder.rotation.y += 0.02;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function initProduct3D() {
+            const canvas = document.getElementById('product3dCanvas');
+            if (!canvas) return;
+
+            const parent = canvas.parentElement;
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0d1117);
+
+            const camera = new THREE.PerspectiveCamera(45, parent.clientWidth / parent.clientHeight, 0.1, 1000);
+            camera.position.set(0, 2.5, 4.2);
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(parent.clientWidth, parent.clientHeight);
+
+            const compactGroup = new THREE.Group();
+
+            const baseGeo = new THREE.CylinderGeometry(1.3, 1.25, 0.25, 64);
+            const caseMat = new THREE.MeshStandardMaterial({ color: 0xFCE7F0, roughness: 0.25, metalness: 0.1 });
+            const baseMesh = new THREE.Mesh(baseGeo, caseMat);
+            compactGroup.add(baseMesh);
+
+            const powderGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.12, 64);
+            const powderMat = new THREE.MeshStandardMaterial({ color: 0xF5C2C1, roughness: 0.6, metalness: 0.3 });
+            const powderMesh = new THREE.Mesh(powderGeo, powderMat);
+            powderMesh.position.y = 0.1;
+            compactGroup.add(powderMesh);
+
+            const lidGroup = new THREE.Group();
+            lidGroup.position.set(0, 0.12, -1.2);
+
+            const lidCaseGeo = new THREE.CylinderGeometry(1.3, 1.3, 0.15, 64);
+            const lidCaseMesh = new THREE.Mesh(lidCaseGeo, caseMat);
+            lidCaseMesh.position.set(0, 0, 1.2);
+            lidGroup.add(lidCaseMesh);
+
+            const mirrorGeo = new THREE.CircleGeometry(1.0, 64);
+            const mirrorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.0, metalness: 0.98 });
+            const mirrorMesh = new THREE.Mesh(mirrorGeo, mirrorMat);
+            mirrorMesh.position.set(0, -0.08, 1.2);
+            mirrorMesh.rotation.x = Math.PI / 2;
+            lidGroup.add(mirrorMesh);
+
+            const bulbCount = 12;
+            const radius = 1.1;
+            ledBulbMaterials = [];
+
+            for (let i = 0; i < bulbCount; i++) {
+                const angle = (i / bulbCount) * Math.PI * 2;
+                const bx = Math.cos(angle) * radius;
+                const bz = Math.sin(angle) * radius;
+
+                const bulbGeo = new THREE.SphereGeometry(0.06, 16, 16);
+                const bulbMat = new THREE.MeshBasicMaterial({ color: ledColor });
+                ledBulbMaterials.push(bulbMat);
+
+                const bulbMesh = new THREE.Mesh(bulbGeo, bulbMat);
+                bulbMesh.position.set(bx, -0.07, 1.2 + bz);
+                lidGroup.add(bulbMesh);
+            }
+
+            lidGroup.rotation.x = -Math.PI * 0.65;
+            compactGroup.add(lidGroup);
+            scene.add(compactGroup);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            mainLight.position.set(3, 6, 4);
+            scene.add(mainLight);
+
+            mirrorLight = new THREE.PointLight(ledColor, 3.5, 6);
+            mirrorLight.position.set(0, 1.2, 0);
+            scene.add(mirrorLight);
+
+            camera.lookAt(0, 0.3, 0);
+
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            function onPointerDown(clientX, clientY) {
+                isDragging = true;
+                previousMousePosition = { x: clientX, y: clientY };
+            }
+
+            function onPointerMove(clientX, clientY) {
+                if (!isDragging) return;
+                const deltaX = clientX - previousMousePosition.x;
+                const deltaY = clientY - previousMousePosition.y;
+
+                compactGroup.rotation.y += deltaX * 0.01;
+                compactGroup.rotation.x += deltaY * 0.008;
+
+                compactGroup.rotation.x = Math.max(-0.6, Math.min(0.9, compactGroup.rotation.x));
+                previousMousePosition = { x: clientX, y: clientY };
+            }
+
+            function onPointerUp() {
+                isDragging = false;
+            }
+
+            canvas.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', onPointerUp);
+
+            canvas.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+            });
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1) onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+            });
+            window.addEventListener('touchend', onPointerUp);
+
+            window.addEventListener('resize', () => {
+                if (!parent) return;
+                camera.aspect = parent.clientWidth / parent.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(parent.clientWidth, parent.clientHeight);
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (!isDragging) {
+                    compactGroup.rotation.y += 0.006;
+                }
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
